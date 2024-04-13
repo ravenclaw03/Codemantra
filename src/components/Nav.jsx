@@ -11,12 +11,37 @@ const Nav = () => {
   const { loggedIn,setLoggedIn } = useContext(AuthContext);
   const mainControls = useAnimation();
   const slideControls = useAnimation();
+  const maxRetries = 3;
   useEffect(() => {
     if (isInView) {
       mainControls.start("visible");
       slideControls.start("visible");
     }
   }, [isInView, mainControls, slideControls]);
+     useEffect(() => {
+       const checkAuth = async (retryCount = 0) => {
+         try {
+           const response = await axios.get(`${URL}/check`, {
+             withCredentials: true,
+           });
+
+           if (response.data.Status === "Success") {
+             setLoggedIn(true);
+           } else {
+             if (retryCount < maxRetries) {
+               checkAuth(retryCount + 1);
+             }
+           }
+         } catch (error) {
+           console.log(error);
+           if (retryCount < maxRetries) {
+             checkAuth(retryCount + 1);
+           }
+         }
+       };
+
+       checkAuth();
+     }, [setLoggedIn]);
   const navigate=useNavigate();
  const handleLogout=async()=>{
   try {
@@ -40,27 +65,34 @@ const Nav = () => {
           }}
           initial="hidden"
           animate={mainControls}
-          transition={{ duration: 1.5, delay: 0.25 }}
-          className="flex md:flex-row md:gap-3 m-4 justify-around items-baseline flex-col"
+          transition={{ duration: 2.0, delay: 0.25 }}
+          className="flex md:flex-row md:gap-3 m-4 justify-around items-baseline flex-col relative h-full"
         >
           <Link to="">
             <h1 className=" font-extrabold text-4xl">CodeMantra</h1>
           </Link>
-          <h3 className=" font-extralight md:text-lg md:mb-2">
+          <h3 className=" font-extralight sm:text-lg sm:mb-2 text-sm">
             &lt;the ultimate code editor&gt;
           </h3>
         </motion.div>
         {loggedIn ? (
-          <div className=" flex">
-            <h3 className=" text-white mx-3">Welcome Admin</h3>
-            <button className="px-2 hover:bg-white hover:text-[#000814] text-red-600" onClick={handleLogout}>
+          <div className=" flex flex-col sm:flex-row">
+            <Link to="submissions">
+              <button className="px-2 hover:bg-white hover:text-[#000814] ">
+                Submissions
+              </button>
+            </Link>
+            <button
+              className="px-2 hover:bg-white hover:text-[#000814] text-red-600"
+              onClick={handleLogout}
+            >
               Logout
             </button>
           </div>
         ) : (
           <div className=" m-4">
             <Link to="login">
-              <button className="px-2 hover:bg-white hover:text-[#000814]">
+              <button className="px-2 hover:bg-white hover:text-[#000814] ">
                 Login as Admin
               </button>
             </Link>

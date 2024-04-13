@@ -13,16 +13,16 @@ body {
 }
 
 ::-webkit-scrollbar {
-  width: 0.25em;
-  height: 0em;
+  width: 0.15em;
+  height: 0.25em;
 }
 ::-webkit-scrollbar-track {
-  background: #000;
+  background: #000814;
 }
 ::-webkit-scrollbar-thumb {
-  background: #000;
+  background: #fff;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #fff;
+  background: #991b1b;
 }
